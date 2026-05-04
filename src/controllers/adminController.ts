@@ -16,12 +16,14 @@ export async function getAdminIndex(_req: Request, res: Response) {
 	const posts = await loadPosts();
 
 	res.render("admin/index", {
-		posts: posts.map((post) => ({
-			title: post.title,
-			author: post.author,
-			slug: slugify(post.title),
-			createdAtLabel: formatDate(post.createdAt),
-		})),
+		posts: posts
+			.map((post) => ({
+				title: post.title,
+				author: post.author,
+				slug: slugify(post.title),
+				createdAtLabel: formatDate(post.createdAt),
+			}))
+			.reverse(),
 	});
 }
 
