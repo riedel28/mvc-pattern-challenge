@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { slugify } from "../util/slugify";
 
-interface Post {
+export interface Post {
 	title: string;
 	image: string;
 	author: string;
@@ -50,4 +50,25 @@ export async function createPosts(newPosts: Post[]): Promise<void> {
 	} catch (error) {
 		console.error("Failed to add posts" + error);
 	}
+}
+
+export async function deletePostBySlug(slug: string): Promise<void> {
+	const posts = await loadPosts();
+	await createPosts(posts.filter((post) => slugify(post.title) !== slug));
+}
+
+export async function addPost(post: Post): Promise<void> {
+	const posts = await loadPosts();
+	await createPosts([...posts, post]);
+}
+
+export async function updatePostBySlug(
+	slug: string,
+	updates: Partial<Post>,
+): Promise<void> {
+	const posts = await loadPosts();
+
+	await createPosts(
+		posts.map((p) => (slugify(p.title) === slug ? { ...p, ...updates } : p)),
+	);
 }

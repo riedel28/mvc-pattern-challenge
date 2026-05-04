@@ -1,0 +1,90 @@
+{% extends "_baseLayout.html" %}
+
+{% block page_header %}
+  <header
+    class="masthead"
+    style="background-image: url('assets/img/post-bg.jpg')"
+  >
+    <div class="container position-relative px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <div class="page-heading">
+            <h1>New Post</h1>
+            <span class="subheading">Compose and publish a new article.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock page_header %}
+
+{% block main_content %}
+  <main class="mb-4">
+    <div class="container px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <p class="mb-4">
+            Fill in the fields below, then submit to add the post to the blog.
+          </p>
+          <form action="/admin/posts" method="post" class="my-5">
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="title"
+                name="title"
+                type="text"
+                placeholder="Title"
+                required
+              />
+              <label for="title">Title</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="image"
+                name="image"
+                type="text"
+                placeholder="Image filename"
+              />
+              <label for="image">Image (filename)</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="author"
+                name="author"
+                type="text"
+                placeholder="Author"
+              />
+              <label for="author">Author</label>
+            </div>
+            <div class="form-floating mb-3">
+              <textarea
+                class="form-control"
+                id="teaser"
+                name="teaser"
+                placeholder="Teaser"
+                style="height: 6rem"
+              ></textarea>
+              <label for="teaser">Teaser</label>
+            </div>
+            <div class="form-floating mb-4">
+              <textarea
+                class="form-control"
+                id="content"
+                name="content"
+                placeholder="Content"
+                style="height: 12rem"
+                required
+              ></textarea>
+              <label for="content">Content</label>
+            </div>
+            <button class="btn btn-primary text-uppercase" type="submit">
+              Create post
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock main_content %}
