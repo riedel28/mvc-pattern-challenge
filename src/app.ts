@@ -8,6 +8,7 @@ import contactRoutes from "./routes/contact";
 import aboutRoutes from "./routes/about";
 import postExampleRoutes from "./routes/examplePost";
 import adminRoutes from "./routes/admin";
+import apiRoutes from "./routes/api";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/about", aboutRoutes);
 app.use("/example-post", postExampleRoutes);
 
 app.use("/admin", adminRoutes);
+app.use("/api", apiRoutes);
 
 const port = Number(process.env.PORT) || 3000;
 
