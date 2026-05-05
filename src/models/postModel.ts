@@ -1,7 +1,8 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { slugify } from "../util/slugify";
+import { slugify, unslugify } from "../util/slugify";
+import { getDB } from "../db/database";
 
 export interface Post {
 	title: string;
@@ -21,8 +22,9 @@ const postsPath = path.join(
 
 export async function loadPosts(): Promise<Post[]> {
 	try {
-		const raw = await readFile(postsPath, "utf-8");
-		const posts = JSON.parse(raw) as Post[];
+		const db = getDB();
+		const posts = await db.all<Post[]>(`SELECT * FROM posts`);
+
 		return posts;
 	} catch (error) {
 		console.error("Failed to load posts" + error);
@@ -33,9 +35,13 @@ export async function loadPosts(): Promise<Post[]> {
 
 export async function loadPostBySlug(slug: string): Promise<Post | null> {
 	try {
-		const raw = await readFile(postsPath, "utf-8");
-		const posts = JSON.parse(raw) as Post[];
-		return posts.find((post) => slugify(post.title) === slug) ?? null;
+		const db = getDB();
+		const post = await db.get<Post>(
+			"SELECT * FROM posts WHERE LOWER(title) = ?",
+			[unslugify(slug)],
+		);
+
+		return post ?? null;
 	} catch (error) {
 		console.error("Failed to load post" + error);
 	}
