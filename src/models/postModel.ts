@@ -20,10 +20,13 @@ const postsPath = path.join(
 	"posts.json",
 );
 
-export async function loadPosts(): Promise<Post[]> {
+export async function loadPosts(q?: string): Promise<Post[]> {
 	try {
 		const db = getDB();
-		const posts = await db.all<Post[]>(`SELECT * FROM posts`);
+		const posts = await db.all<Post[]>(
+			`SELECT * FROM posts WHERE LOWER(title) LIKE ?`,
+			[`%${q?.toLowerCase() || ""}%`],
+		);
 
 		return posts;
 	} catch (error) {

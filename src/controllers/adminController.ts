@@ -12,10 +12,12 @@ import {
 import { formatDate } from "../util/formatDate";
 import { slugify } from "../util/slugify";
 
-export async function getAdminIndex(_req: Request, res: Response) {
-	const posts = await loadPosts();
+export async function getAdminIndex(req: Request, res: Response) {
+	const q = req.query.q as string;
+	const posts = await loadPosts(q);
 
 	res.render("admin/index", {
+		q,
 		posts: posts
 			.map((post) => ({
 				title: post.title,
