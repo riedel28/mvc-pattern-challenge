@@ -18,7 +18,15 @@ export async function getPosts(q?: string): Promise<Post[]> {
 	try {
 		const db = getDB();
 		const posts = await db.all<Post[]>(
-			`SELECT * FROM posts WHERE LOWER(title) LIKE ?`,
+			`SELECT  posts.id,
+				posts.title,
+				posts.content,
+				posts.image,
+				posts.teaser,
+				posts.createdAt,
+				authors.firstName || ' ' || authors.lastName AS author FROM posts 
+			 JOIN authors ON posts.authorId = authors.id
+			 WHERE LOWER(title) LIKE ? `,
 			[`%${q?.toLowerCase() || ""}%`],
 		);
 
@@ -33,7 +41,18 @@ export async function getPosts(q?: string): Promise<Post[]> {
 export async function getPostById(id: number): Promise<Post | null> {
 	try {
 		const db = getDB();
-		const post = await db.get<Post>("SELECT * FROM posts WHERE id = ?", [id]);
+		const post = await db.get<Post>(
+			`SELECT posts.id,
+				posts.title,
+				posts.content,
+				posts.image,
+				posts.teaser,
+				posts.createdAt,
+  			authors.firstName || ' ' || authors.lastName AS author FROM posts 
+			 JOIN authors ON posts.authorId = authors.id 
+			 WHERE id = ?`,
+			[id],
+		);
 
 		return post ?? null;
 	} catch (error) {
@@ -47,7 +66,15 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 	try {
 		const db = getDB();
 		const post = await db.get<Post>(
-			"SELECT * FROM posts WHERE LOWER(title) = ?",
+			`SELECT posts.id,
+				posts.title,
+				posts.content,
+				posts.image,
+				posts.teaser,
+				posts.createdAt,
+  			authors.firstName || ' ' || authors.lastName AS author FROM posts 
+			 JOIN authors ON posts.authorId = authors.id 
+			 WHERE LOWER(posts.title) = ?`,
 			[unslugify(slug).toLowerCase()],
 		);
 

@@ -17,12 +17,19 @@ export async function connectDB(): Promise<Database> {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       content TEXT NOT NULL,
-      author TEXT NOT NULL,
+      authorId INTEGER NOT NULL,
       teaser TEXT,
       image TEXT,
-      createdAt TEXT NOT NULL
+      createdAt TEXT NOT NULL,
+			FOREIGN KEY (authorId) REFERENCES authors(id)
     )`,
 	);
+	await db.run(`CREATE TABLE IF NOT EXISTS authors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+     	firstName TEXT NOT NULL,
+    	lastName TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    )`);
 
 	return db;
 }
