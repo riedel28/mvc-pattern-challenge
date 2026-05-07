@@ -26,7 +26,7 @@ export async function getPosts(q?: string): Promise<Post[]> {
 				posts.createdAt,
 				authors.firstName || ' ' || authors.lastName AS author FROM posts 
 			 JOIN authors ON posts.authorId = authors.id
-			 WHERE LOWER(title) LIKE ? `,
+			 WHERE LOWER(posts.title) LIKE ? `,
 			[`%${q?.toLowerCase() || ""}%`],
 		);
 
