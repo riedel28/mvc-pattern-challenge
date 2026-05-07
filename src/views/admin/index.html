@@ -38,7 +38,7 @@
               </tr>
             </thead>
             <tbody>
-              <form method="get" action="/admin/">
+              <form method="get" action="/admin">
                 <div class="input-group mb-3">
                   <input
                     type="search"
@@ -49,7 +49,9 @@
                   />
                   <button type="submit" class="btn btn-primary">Search</button>
                   {% if q %}
-                  <a href="/admin" class="ms-2 btn btn-outline-secondary">Clear</a>
+                  <a href="/admin" class="ms-2 btn btn-outline-secondary"
+                    >Clear</a
+                  >
                   {% endif %}
                 </div>
               </form>
@@ -87,8 +89,17 @@
         {% else %}
         <p class="text-muted">No posts yet.</p>
         {% endif %}
+        <!-- Pager-->
+        <div class="d-flex justify-content-end mb-4">
+          <a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a>
+        </div>
       </div>
     </div>
   </div>
+  {% if error %}
+  <div class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+  {% endif %}
 </main>
 {% endblock main_content %}

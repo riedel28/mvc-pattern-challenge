@@ -1,26 +1,20 @@
-import { writeFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { slugify, unslugify } from "../util/slugify";
 import { getDB } from "../db/database";
+import { unslugify } from "../util/slugify";
 
 export interface Post {
+	id: number;
 	title: string;
-	image: string;
-	author: string;
-	createdAt: number;
-	teaser: string;
 	content: string;
+	author: string;
+	image?: string;
+	teaser?: string;
+	createdAt: number;
 }
 
-const postsPath = path.join(
-	path.dirname(fileURLToPath(import.meta.url)),
-	"..",
-	"data",
-	"posts.json",
-);
+export type CreatePostPayload = Omit<Post, "id" | "createdAt">;
+export type UpdatePostPayload = Partial<Post>;
 
-export async function loadPosts(q?: string): Promise<Post[]> {
+export async function getPosts(q?: string): Promise<Post[]> {
 	try {
 		const db = getDB();
 		const posts = await db.all<Post[]>(
@@ -36,13 +30,10 @@ export async function loadPosts(q?: string): Promise<Post[]> {
 	return [];
 }
 
-export async function loadPostBySlug(slug: string): Promise<Post | null> {
+export async function getPostById(id: number): Promise<Post | null> {
 	try {
 		const db = getDB();
-		const post = await db.get<Post>(
-			"SELECT * FROM posts WHERE LOWER(title) = ?",
-			[unslugify(slug)],
-		);
+		const post = await db.get<Post>("SELECT * FROM posts WHERE id = ?", [id]);
 
 		return post ?? null;
 	} catch (error) {
@@ -52,32 +43,61 @@ export async function loadPostBySlug(slug: string): Promise<Post | null> {
 	return null;
 }
 
-export async function createPosts(newPosts: Post[]): Promise<void> {
-	const serializedPosts = JSON.stringify(newPosts, null, 2);
+export async function getPostBySlug(slug: string): Promise<Post | null> {
 	try {
-		await writeFile(postsPath, serializedPosts, "utf-8");
+		const db = getDB();
+		const post = await db.get<Post>(
+			"SELECT * FROM posts WHERE LOWER(title) = ?",
+			[unslugify(slug).toLowerCase()],
+		);
+
+		return post ?? null;
 	} catch (error) {
-		console.error("Failed to add posts" + error);
+		console.error("Failed to load post by slug" + error);
 	}
+
+	return null;
 }
 
-export async function deletePostBySlug(slug: string): Promise<void> {
-	const posts = await loadPosts();
-	await createPosts(posts.filter((post) => slugify(post.title) !== slug));
+export async function deletePostById(id: number): Promise<void> {
+	const db = getDB();
+	await db.run("DELETE FROM posts WHERE id = ?", [id]);
 }
 
-export async function addPost(post: Post): Promise<void> {
-	const posts = await loadPosts();
-	await createPosts([...posts, post]);
+export async function createPost(post: CreatePostPayload): Promise<number> {
+	const db = getDB();
+	const newPost = await db.run(
+		"INSERT INTO posts (title, image, author, createdAt, teaser, content) VALUES ($title, $image, $author, $createdAt, $teaser, $content)",
+		{
+			$title: post.title,
+			$image: post.image,
+			$author: post.author,
+			$createdAt: Math.floor(Date.now() / 1000),
+			$teaser: post.teaser,
+			$content: post.content,
+		},
+	);
+	if (typeof newPost.lastID !== "number") {
+		throw new Error("Failed to create post: missing inserted post id");
+	}
+
+	return newPost.lastID;
 }
 
-export async function updatePostBySlug(
-	slug: string,
-	updates: Partial<Post>,
+export async function updatePostById(
+	id: number,
+	updates: UpdatePostPayload,
 ): Promise<void> {
-	const posts = await loadPosts();
-
-	await createPosts(
-		posts.map((p) => (slugify(p.title) === slug ? { ...p, ...updates } : p)),
+	const db = getDB();
+	await db.run(
+		"UPDATE posts SET title=$title, content=$content, author=$author, teaser=$teaser, image=$image WHERE id=$id",
+		{
+			$title: updates.title,
+			$content: updates.content,
+			$author: updates.author,
+			$teaser: updates.teaser,
+			$image: updates.image,
+			$id: id,
+		},
 	);
 }

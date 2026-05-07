@@ -16,11 +16,11 @@ export async function connectDB(): Promise<Database> {
 		`CREATE TABLE IF NOT EXISTS posts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
-      teaser TEXT NOT NULL,
+      content TEXT NOT NULL,
       author TEXT NOT NULL,
-      createdAt TEXT NOT NULL,
-      image TEXT NOT NULL,
-      content TEXT NOT NULL
+      teaser TEXT,
+      image TEXT,
+      createdAt TEXT NOT NULL
     )`,
 	);
 

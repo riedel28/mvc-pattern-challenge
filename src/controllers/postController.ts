@@ -1,13 +1,16 @@
 import type { Request, Response } from "express";
 
-import { loadPostBySlug, loadPosts } from "../models/postModel";
+import {
+	getPostBySlug as getPostBySlugModel,
+	getPosts as getPostsModel,
+} from "../models/postModel";
 import { slugify } from "../util/slugify";
 import { formatDate } from "../util/formatDate";
 
 const PAGE_SIZE = 2;
 
 export async function getPosts(req: Request, res: Response) {
-	const posts = await loadPosts();
+	const posts = await getPostsModel();
 
 	const authorFilter =
 		typeof req.query.author === "string" ? req.query.author.trim() : "";
@@ -65,7 +68,7 @@ export async function getPostBySlug(req: Request, res: Response) {
 		return;
 	}
 
-	const post = await loadPostBySlug(slug);
+	const post = await getPostBySlugModel(slug);
 
 	if (!post) {
 		res.status(404).send("Post not found");

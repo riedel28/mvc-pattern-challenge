@@ -6,6 +6,7 @@ CREATE TABLE posts (
   content TEXT NOT NULL,
   author TEXT NOT NULL,
   createdAt INTEGER NOT NULL,
+  teaser TEXT,
   image TEXT NOT NULL
 );
 

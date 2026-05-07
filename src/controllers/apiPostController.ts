@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
 
-import { loadPosts, type Post } from "../models/postModel";
+import { getPosts, type Post } from "../models/postModel";
 
 export async function getRandomPost(
 	_req: Request,
 	res: Response,
 ): Promise<void> {
-	const posts = await loadPosts();
+	const posts = await getPosts();
 	const randomIndex = Math.floor(Math.random() * posts.length);
 	const post = posts[randomIndex] as Post;
 
@@ -21,13 +21,13 @@ export async function getLatestPosts(
 	_req: Request,
 	res: Response,
 ): Promise<void> {
-	const posts = await loadPosts();
+	const posts = await getPosts();
 	const latestPosts = posts.slice(0, 3);
 	res.json(latestPosts);
 }
 
 export async function getStats(_req: Request, res: Response) {
-	const posts = await loadPosts();
+	const posts = await getPosts();
 	const totalPosts = posts.length;
 	const [newestPost] = [...posts].sort((a, b) => b.createdAt - a.createdAt);
 	const [newestPostDate] = new Date(newestPost.createdAt * 1000)
